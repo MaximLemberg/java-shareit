@@ -72,7 +72,6 @@ public class ItemServiceImpl implements ItemService {
                         v.getDescription().toLowerCase().contains(request))
                 .filter(a -> a.getAvailable())
                 .forEach(Item -> found.add(itemMapper.toItemDto(Item)));
-        System.out.println(found);
         return found;
     }
 

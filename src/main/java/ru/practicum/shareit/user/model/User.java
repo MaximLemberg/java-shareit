@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**

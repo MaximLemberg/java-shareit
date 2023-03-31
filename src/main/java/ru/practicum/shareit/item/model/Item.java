@@ -23,7 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "items")
-public class Item implements Serializable {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
