@@ -15,21 +15,20 @@ import javax.validation.constraints.Size;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class ItemDto {
+public class ItemDtoUpdate {
 
     Long id;
 
-    @NotNull
-    @NotEmpty
     @Size(max = 64)
     String name;
 
-    @NotNull
-    @NotEmpty
+
     @Size(max = 256)
     String description;
 
-    @NotNull
+
     Boolean available;
 
+    // Next Sprint
+    //String request;
 }
