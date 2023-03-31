@@ -54,12 +54,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> findAll() {
         List<User> foundEntity = userRepository.findAll();
-        List<UserDto> found= new ArrayList<>();
+        List<UserDto> found = new ArrayList<>();
         foundEntity.stream().forEach(User -> found.add(userMapper.toUserDto(User)));
         return found;
     }
 
-    public boolean checkEmail (String email) {
+    public boolean checkEmail(String email) {
         return findAll().stream().map(UserDto::getEmail).filter(email::equals).findFirst().isPresent();
     }
 }
