@@ -7,14 +7,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-/**
- * TODO Sprint add-controllers.
- */
-@Getter
-@Setter
-@ToString
+
+@Value
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class ItemDto {
 
     Long id;

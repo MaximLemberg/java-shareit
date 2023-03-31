@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAll() {
         List<User> foundEntity = userRepository.findAll();
         List<UserDto> found = new ArrayList<>();
-        foundEntity.stream().forEach(User -> found.add(userMapper.toUserDto(User)));
+        foundEntity.forEach(User -> found.add(userMapper.toUserDto(User)));
         return found;
     }
 

@@ -6,9 +6,6 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Getter
 @Setter
 @ToString
@@ -21,7 +18,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "id")
     Long id;
 
     @Column(name = "user_name", nullable = false)

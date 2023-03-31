@@ -6,12 +6,8 @@ import ru.practicum.shareit.validate.annotation.EmptyOrNullOrEmail;
 import javax.validation.constraints.*;
 
 
-@Getter
-@Setter
-@ToString
+@Value
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequiredArgsConstructor
-@AllArgsConstructor
 public class UserDto {
 
     Long id;

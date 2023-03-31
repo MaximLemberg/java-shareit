@@ -4,14 +4,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.Size;
 
-/**
- * TODO Sprint add-controllers.
- */
-@Getter
-@Setter
-@ToString
+
+@Value
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
 public class ItemDtoUpdate {
 
     Long id;
@@ -26,6 +21,4 @@ public class ItemDtoUpdate {
 
     Boolean available;
 
-    // Next Sprint
-    //String request;
 }
