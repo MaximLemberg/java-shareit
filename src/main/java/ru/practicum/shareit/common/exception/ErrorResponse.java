@@ -1,4 +1,4 @@
-package ru.practicum.shareit.common;
+package ru.practicum.shareit.common.exception;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -10,5 +10,5 @@ import java.time.OffsetDateTime;
 public class ErrorResponse {
     OffsetDateTime timestamp = OffsetDateTime.now();
     Integer code;
-    String errorMessage;
+    String error;
 }

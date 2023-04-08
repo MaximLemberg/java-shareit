@@ -3,8 +3,12 @@ package ru.practicum.shareit.item.contoller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoUpdate;
+import ru.practicum.shareit.item.comment.model.dto.CommentDto;
+import ru.practicum.shareit.item.comment.model.dto.CommentDtoResponse;
+import ru.practicum.shareit.item.comment.service.CommentService;
+import ru.practicum.shareit.item.model.dto.ItemDto;
+import ru.practicum.shareit.item.model.dto.ItemDtoFullResponse;
+import ru.practicum.shareit.item.model.dto.ItemDtoUpdate;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -20,6 +24,8 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    private final CommentService commentService;
+
     @PostMapping
     public ItemDto add(@Valid @RequestBody ItemDto itemDto,
                        @RequestHeader(X_SHARER_USER_ID) Long userId) {
@@ -34,18 +40,25 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findById(@PathVariable(value = "itemId") Long itemId,
-                                    @RequestHeader(X_SHARER_USER_ID) Long userId) {
+    public ItemDtoFullResponse findById(@PathVariable(value = "itemId") Long itemId,
+                                        @RequestHeader(X_SHARER_USER_ID) Long userId) {
         return itemService.findById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> findAllByUserId(@RequestHeader(X_SHARER_USER_ID) Long userId) {
+    public List<ItemDtoFullResponse> findAllByUserId(@RequestHeader(X_SHARER_USER_ID) Long userId) {
         return itemService.findAllByUserId(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchByNameOrDescription(@RequestParam(value = "text") String request) {
         return itemService.searchByNameOrDescription(request.toLowerCase());
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoResponse addComment(@Valid @RequestBody CommentDto commentDto,
+                                         @PathVariable(value = "itemId") Long itemId,
+                                         @RequestHeader(X_SHARER_USER_ID) Long userId) {
+        return commentService.add(commentDto, itemId, userId);
     }
 }
