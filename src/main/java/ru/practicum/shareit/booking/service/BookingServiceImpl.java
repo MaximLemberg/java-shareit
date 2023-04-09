@@ -23,7 +23,6 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -153,7 +152,6 @@ public class BookingServiceImpl implements BookingService {
         System.out.println(userRepository);
         check(userRepository, ownerId);
         List<Booking> foundEntity = bookingRepository.findAll();
-        List<BookingDto> found = new ArrayList<>();
         if (state.equalsIgnoreCase("WAITING")) {
             return foundEntity.stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
