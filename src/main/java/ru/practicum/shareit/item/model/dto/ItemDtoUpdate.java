@@ -6,7 +6,6 @@ import javax.validation.constraints.Size;
 
 
 @Value
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDtoUpdate {
 
     Long id;

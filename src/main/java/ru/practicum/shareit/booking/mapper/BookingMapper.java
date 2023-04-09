@@ -13,15 +13,10 @@ import ru.practicum.shareit.user.model.dto.UserDto;
 public interface BookingMapper extends Mapper<Booking, BookingDto> {
 
     @Mapping(target = "id", source = "source.id")
-    @Mapping(target = "item", source = "item")
-    @Mapping(target = "booker", source = "booker")
-    @Mapping(target = "start", source = "source.start")
-    @Mapping(target = "end", source = "source.end")
     Booking toEntity(BookingDtoAdd source, ItemDto item, UserDto booker);
 
 
-    @Mapping(target = "id", source = "source.id")
-    @Mapping(target = "bookerId", source = "bookerId")
+
     BookingDtoByItem toBookingDtoByItem(Booking source, Long bookerId);
 
 }

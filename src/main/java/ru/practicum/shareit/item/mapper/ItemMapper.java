@@ -21,17 +21,12 @@ public interface ItemMapper extends Mapper<Item, ItemDto> {
 
     @Mapping(target = "id", source = "source.id")
     @Mapping(target = "name", source = "source.name")
-    @Mapping(target = "owner", source = "owner")
     Item toEntity(ItemDto source, User owner);
 
 
     @Mapping(target = "id", source = "source.id")
-    @Mapping(target = "name", source = "source.name")
-    @Mapping(target = "description", source = "source.description")
-    @Mapping(target = "available", source = "source.available")
     @Mapping(target = "lastBooking", source = "last")
     @Mapping(target = "nextBooking", source = "next")
-    @Mapping(target = "comments", source = "comments")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     ItemDtoFullResponse toDtoFullResponse(Item source, BookingDtoByItem last, BookingDtoByItem next,
                                           List<CommentDtoResponse> comments);
