@@ -42,7 +42,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> findAllByUserId(Long userId) {
         check(userRepository, userId);
-        return itemRequestRepository.findAllByRequesterId(userId).stream()
+        return itemRequestRepository.findAll().stream()
                 .filter(v -> v.getRequester().getId().equals(userId))
                 .map(itemRequestMapper::toDto)
                 .collect(Collectors.toList());
