@@ -1,4 +1,4 @@
-package ru.practicum.shareit.common;
+package ru.practicum.shareit.common.exception;
 
 import org.springframework.web.bind.annotation.ResponseStatus;
 
