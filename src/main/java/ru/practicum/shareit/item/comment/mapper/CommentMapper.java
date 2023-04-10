@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.comment.mapper;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.common.mapper.Mapper;
 import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.model.dto.CommentDto;
@@ -24,6 +26,7 @@ public interface CommentMapper extends Mapper<Comment, CommentDto> {
     @Mapping(target = "text", source = "source.text")
     @Mapping(target = "authorName", source = "authorName")
     @Mapping(target = "created", source = "source.created")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     CommentDtoResponse toDtoResponse(CommentDto source, String authorName);
 
 }
