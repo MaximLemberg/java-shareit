@@ -60,7 +60,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (from < 0) {
             throw new ValidationException("From negative");
         }
-        PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by("created").descending());
+        PageRequest pageRequest = PageRequest.of(from, size, Sort.by("created").descending());
         return itemRequestRepository.findAllByRequesterIdNot(userId, pageRequest).stream()
                 .map(itemRequestMapper::toDto)
                 .collect(Collectors.toList());

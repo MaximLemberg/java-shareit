@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.model.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.validate.annotation.EmptyOrNullOrEmail;
+import ru.practicum.shareit.common.validate.annotation.EmptyOrNullOrEmail;
 import javax.validation.constraints.*;
 
 

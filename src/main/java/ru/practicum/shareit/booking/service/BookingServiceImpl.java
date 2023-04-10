@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -95,100 +97,123 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllById(Long bookerId, String state) {
+    public List<BookingDto> findAllById(Long bookerId, String state, Integer from, Integer size) {
+        System.out.println(bookerId);
+        System.out.println(state);
+        System.out.println(from);
+        System.out.println(size);
+        if (from >= 0 && size >= 1 && from != 9999 && size != 9999) {
+            check(userRepository, bookerId);
+            PageRequest pageRequest = PageRequest.of(from / size , size, Sort.by("start").descending());
+            System.out.println(bookingRepository.findAllByBookerId(bookerId, pageRequest).stream()
+                    .map(bookingMapper::toDto)
+                    .collect(Collectors.toList()));
+            return bookingRepository.findAllByBookerId(bookerId, pageRequest).stream()
+                    .map(bookingMapper::toDto)
+                    .collect(Collectors.toList());
+        }
+        if (from <= 0 || size <= 0) {
+            throw new ValidationException("Validation");
+        }
         if (state.equalsIgnoreCase("UNSUPPORTED_STATUS")) {
             throw new UnsupportedStateException("Unknown state: UNSUPPORTED_STATUS");
         }
         check(userRepository, bookerId);
-        List<Booking> foundEntity = bookingRepository.findAll();
         if (state.equalsIgnoreCase("WAITING")) {
-            return foundEntity.stream()
+            return bookingRepository.findAll().stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .filter(v -> v.getBooker().getId().equals(bookerId))
+                    .filter(booking -> booking.getBooker().getId().equals(bookerId))
                     .filter(s -> s.getStatus().toString().equalsIgnoreCase("WAITING"))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
         }
         if (state.equalsIgnoreCase("REJECTED")) {
-            return foundEntity.stream()
+            return bookingRepository.findAll().stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .filter(v -> v.getBooker().getId().equals(bookerId))
+                    .filter(booking -> booking.getBooker().getId().equals(bookerId))
                     .filter(s -> s.getStatus().toString().equalsIgnoreCase("REJECTED"))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
 
         }
         if (state.equalsIgnoreCase("CURRENT")) {
-            return foundEntity.stream()
-                    .sorted(Comparator.comparing(Booking::getStart))
-                    .filter(v -> v.getBooker().getId().equals(bookerId))
+            return bookingRepository.findAll().stream()
+                    .sorted(Comparator.comparing(Booking::getStart).reversed())
+                    .filter(booking -> booking.getBooker().getId().equals(bookerId))
                     .filter(t -> LocalDateTime.now().isBefore(t.getEnd()))
                     .filter(t -> LocalDateTime.now().isAfter(t.getStart()))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
         }
         if (state.equalsIgnoreCase("PAST")) {
-            return foundEntity.stream()
+            return bookingRepository.findAll().stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .filter(v -> v.getBooker().getId().equals(bookerId))
+                    .filter(booking -> booking.getBooker().getId().equals(bookerId))
                     .filter(t -> LocalDateTime.now().isAfter(t.getEnd()))
                     .filter(t -> LocalDateTime.now().isAfter(t.getStart()))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
         }
-        return foundEntity.stream()
+        return bookingRepository.findAll().stream()
                 .sorted(Comparator.comparing(Booking::getStart).reversed())
-                .filter(v -> v.getBooker().getId().equals(bookerId))
+                .filter(booking -> booking.getBooker().getId().equals(bookerId))
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<BookingDto> findAllByOwnerId(Long ownerId, String state) {
+    public List<BookingDto> findAllByOwnerId(Long ownerId, String state, Integer from, Integer size) {
+        if (from >= 0 && size >= 1 && from != 9999 && size != 9999) {
+            check(userRepository, ownerId);
+            PageRequest pageRequest = PageRequest.of(from , size, Sort.by("start").descending());
+            return bookingRepository.findAllByItemOwnerId(ownerId, pageRequest).stream()
+                    .map(bookingMapper::toDto)
+                    .collect(Collectors.toList());
+        }
+        if (from <= 0 || size <= 0) {
+            throw new ValidationException("Validation");
+        }
         if (state.equalsIgnoreCase("UNSUPPORTED_STATUS")) {
             throw new UnsupportedStateException("Unknown state: UNSUPPORTED_STATUS");
         }
-        log.debug("Owner: {} ", ownerId);
-        System.out.println(userRepository);
         check(userRepository, ownerId);
-        List<Booking> foundEntity = bookingRepository.findAll();
         if (state.equalsIgnoreCase("WAITING")) {
-            return foundEntity.stream()
+            return bookingRepository.findAll().stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .filter(v -> v.getItem().getOwner().getId().equals(ownerId))
+                    .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                     .filter(s -> s.getStatus().toString().equalsIgnoreCase("WAITING"))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
         }
         if (state.equalsIgnoreCase("REJECTED")) {
-            return foundEntity.stream()
+            return bookingRepository.findAll().stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .filter(v -> v.getItem().getOwner().getId().equals(ownerId))
+                    .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                     .filter(s -> s.getStatus().toString().equalsIgnoreCase("REJECTED"))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
         }
         if (state.equalsIgnoreCase("CURRENT")) {
-            return foundEntity.stream()
-                    .sorted(Comparator.comparing(Booking::getStart))
-                    .filter(v -> v.getItem().getOwner().getId().equals(ownerId))
+            return bookingRepository.findAll().stream()
+                    .sorted(Comparator.comparing(Booking::getStart).reversed())
+                    .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                     .filter(t -> LocalDateTime.now().isBefore(t.getEnd()))
                     .filter(t -> LocalDateTime.now().isAfter(t.getStart()))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
         }
         if (state.equalsIgnoreCase("PAST")) {
-            return foundEntity.stream()
+            return bookingRepository.findAll().stream()
                     .sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .filter(v -> v.getItem().getOwner().getId().equals(ownerId))
+                    .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                     .filter(t -> LocalDateTime.now().isAfter(t.getEnd()))
                     .filter(t -> LocalDateTime.now().isAfter(t.getStart()))
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
         }
-        return foundEntity.stream()
+        return bookingRepository.findAll().stream()
                 .sorted(Comparator.comparing(Booking::getStart).reversed())
-                .filter(v -> v.getItem().getOwner().getId().equals(ownerId))
+                .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
     }
