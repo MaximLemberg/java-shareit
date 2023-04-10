@@ -29,7 +29,9 @@ public interface ItemMapper extends Mapper<Item, ItemDto> {
     @Mapping(target = "request", source = "source.requestId")
     Item toEntity(ItemDto source, User owner);
 
+
     ItemRequest getItemRequest(Long id);
+
     @Mapping(target = "id", source = "source.id")
     @Mapping(target = "lastBooking", source = "last")
     @Mapping(target = "nextBooking", source = "next")

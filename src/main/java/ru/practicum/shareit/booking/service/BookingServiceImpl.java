@@ -104,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
         System.out.println(size);
         if (from >= 0 && size >= 1 && from != 9999 && size != 9999) {
             check(userRepository, bookerId);
-            PageRequest pageRequest = PageRequest.of(from / size , size, Sort.by("start").descending());
+            PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
             System.out.println(bookingRepository.findAllByBookerId(bookerId, pageRequest).stream()
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList()));
@@ -165,7 +165,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> findAllByOwnerId(Long ownerId, String state, Integer from, Integer size) {
         if (from >= 0 && size >= 1 && from != 9999 && size != 9999) {
             check(userRepository, ownerId);
-            PageRequest pageRequest = PageRequest.of(from , size, Sort.by("start").descending());
+            PageRequest pageRequest = PageRequest.of(from, size, Sort.by("start").descending());
             return bookingRepository.findAllByItemOwnerId(ownerId, pageRequest).stream()
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
