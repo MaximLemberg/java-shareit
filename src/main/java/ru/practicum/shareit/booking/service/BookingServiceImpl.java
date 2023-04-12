@@ -52,7 +52,6 @@ public class BookingServiceImpl implements BookingService {
         checkTime(bookingDto);
         Item checkItem = check(itemRepository, bookingDto.getItemId());
         User checkUser = check(userRepository, userId);
-        System.out.println(checkItem);
         if (checkItem.getOwner().getId().equals(userId)) {
             throw new EntityNotFoundException("Item Unavailable");
         }
@@ -98,16 +97,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> findAllById(Long bookerId, String state, Integer from, Integer size) {
-        System.out.println(bookerId);
-        System.out.println(state);
-        System.out.println(from);
-        System.out.println(size);
         if (from >= 0 && size >= 1 && from != 9999 && size != 9999) {
             check(userRepository, bookerId);
             PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
-            System.out.println(bookingRepository.findAllByBookerId(bookerId, pageRequest).stream()
-                    .map(bookingMapper::toDto)
-                    .collect(Collectors.toList()));
             return bookingRepository.findAllByBookerId(bookerId, pageRequest).stream()
                     .map(bookingMapper::toDto)
                     .collect(Collectors.toList());
