@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.common.exception.EntityNotFoundException;
-import ru.practicum.shareit.user.model.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.model.dto.UserDto;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import javax.validation.constraints.NotNull;

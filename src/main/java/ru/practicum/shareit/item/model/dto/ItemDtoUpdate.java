@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model.dto;
 
-import lombok.*;
+import lombok.Value;
+
 import javax.validation.constraints.Size;
 
 

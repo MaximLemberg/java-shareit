@@ -21,7 +21,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.ItemDto;
 import ru.practicum.shareit.item.model.dto.ItemDtoFullResponse;
 import ru.practicum.shareit.item.model.dto.ItemDtoUpdate;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
