@@ -111,7 +111,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void addCommentTest() {
+    void addCommentNotValidTest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user1));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item1));
 

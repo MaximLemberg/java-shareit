@@ -18,6 +18,7 @@ import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.common.exception.EntityNotFoundException;
 import ru.practicum.shareit.common.exception.NotAvailableException;
 import ru.practicum.shareit.common.exception.UnsupportedStateException;
+import ru.practicum.shareit.common.exception.ValidationException;
 import ru.practicum.shareit.item.comment.mapper.CommentMapper;
 import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.model.dto.CommentDto;
@@ -196,6 +197,36 @@ class BookingServiceImplTest {
 
         assertEquals(Status.APPROVED, updated.getStatus());
         verify(bookingRepository, times(1)).save(booking1);
+    }
+
+    @Test
+    void upgradeBookingNotOwnerTest() {
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.ofNullable(booking1));
+
+        final EntityNotFoundException exception = Assertions.assertThrows(
+                EntityNotFoundException.class,
+                () -> bookingService.upgrade(booking1.getId(), 100L, true));
+
+        Assertions.assertEquals("Only owner can change status", exception.getMessage());
+
+    }
+
+    @Test
+    void upgradeBookingAlreadyApprovedTest() {
+        booking1 = new Booking(ID_1,
+                user1,
+                item1,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(20),
+                Status.APPROVED);
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.ofNullable(booking1));
+
+        final ValidationException exception = Assertions.assertThrows(
+                ValidationException.class,
+                () -> bookingService.upgrade(booking1.getId(), user1.getId(), true));
+
+        Assertions.assertEquals("Status already set", exception.getMessage());
+
     }
 
     @Test
@@ -406,6 +437,45 @@ class BookingServiceImplTest {
                         9999));
 
         Assertions.assertEquals("Unknown state: UNSUPPORTED_STATUS", exception.getMessage());
+    }
+
+    @Test
+    void checkTimeTestStartNull() {
+        bookingAdd1 = new BookingDtoAdd(ID_1, 1L,
+                null,
+                LocalDateTime.now().plusDays(20),
+                Status.WAITING);
+        final ValidationException exception = Assertions.assertThrows(
+                ValidationException.class,
+                () -> bookingService.checkTime(bookingAdd1));
+
+        Assertions.assertEquals("Incorrect time", exception.getMessage());
+    }
+
+    @Test
+    void checkTimeTestEndNull() {
+        bookingAdd1 = new BookingDtoAdd(ID_1, 1L,
+                LocalDateTime.now(),
+                null,
+                Status.WAITING);
+        final ValidationException exception = Assertions.assertThrows(
+                ValidationException.class,
+                () -> bookingService.checkTime(bookingAdd1));
+
+        Assertions.assertEquals("Incorrect time", exception.getMessage());
+    }
+
+    @Test
+    void checkTimeTestNotValid() {
+        bookingAdd1 = new BookingDtoAdd(ID_1, 1L,
+                LocalDateTime.now(),
+                LocalDateTime.now().minusDays(1),
+                Status.WAITING);
+        final ValidationException exception = Assertions.assertThrows(
+                ValidationException.class,
+                () -> bookingService.checkTime(bookingAdd1));
+
+        Assertions.assertEquals("Incorrect time", exception.getMessage());
     }
 
 

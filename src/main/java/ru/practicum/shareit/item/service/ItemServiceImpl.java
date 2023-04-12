@@ -73,6 +73,8 @@ public class ItemServiceImpl implements ItemService {
                 .forEach(Comment -> commentsByItemId.add(commentMapper.toDto(Comment)));
         commentsByItemId.forEach(CommentDto -> commentDtoResponseList.add(
                 commentMapper.toDtoResponse(CommentDto, CommentDto.getAuthor().getName())));
+        System.out.println(bookingRepository.findAll());
+        System.out.println(targetItem.getOwner().getId());
         bookingRepository.findAll().stream()
                 .filter(v -> v.getItem().getId().equals(itemId))
                 .filter(d -> d.getStart().getDayOfMonth() == (LocalDateTime.now().getDayOfMonth()))

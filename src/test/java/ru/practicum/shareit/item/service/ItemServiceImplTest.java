@@ -5,12 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.enums.Status;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.common.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.comment.mapper.CommentMapper;
@@ -21,7 +20,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.ItemDto;
 import ru.practicum.shareit.item.model.dto.ItemDtoFullResponse;
 import ru.practicum.shareit.item.model.dto.ItemDtoUpdate;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -31,8 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -48,6 +45,9 @@ class ItemServiceImplTest {
     private BookingRepository bookingRepository;
     @Mock
     private CommentRepository commentRepository;
+
+    @Mock
+    private List<Booking> bookingsByItemId;
 
     public static final long ID_1 = 1L;
 
@@ -69,14 +69,14 @@ class ItemServiceImplTest {
 
     private ItemServiceImpl itemService;
 
-    @Captor
-    private ArgumentCaptor<Item> itemArgumentCaptor;
-
     private User user1;
     private Item item1;
 
     private Item item2;
     private Booking booking1;
+
+    private Booking booking2;
+    private Booking booking3;
     private Comment comment1;
     private ItemRequest itemRequest1;
     private ItemDto itemDto1;
@@ -105,6 +105,24 @@ class ItemServiceImplTest {
                 user1,
                 LocalDateTime.now(),
                 null);
+        booking1 = new Booking(ID_1,
+                user1,
+                item1,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(20),
+                Status.APPROVED);
+        booking2 = new Booking(ID_2,
+                user1,
+                item1,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(20),
+                Status.APPROVED);
+        booking3 = new Booking(3L,
+                user1,
+                item1,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(20),
+                Status.APPROVED);
 
 
     }
@@ -118,6 +136,13 @@ class ItemServiceImplTest {
 
         assertEquals(itemMapper.toDto(item1), added);
         verify(itemRepository, times(1)).save(any(Item.class));
+    }
+
+    @Test
+    void addNotFound() {
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> itemService.add(itemDto1, 100L));
+        assertTrue(exception.getMessage().contains("Object not Found"));
     }
 
     @Test
@@ -137,6 +162,52 @@ class ItemServiceImplTest {
         assertEquals(itemDtoUpdate1.getDescription(), updated.getDescription());
         verify(itemRepository, times(1)).save(any(Item.class));
     }
+
+    @Test
+    void updateNotOwner() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item1));
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> itemService.update(itemDtoUpdate1, item1.getId(), 100L));
+        assertTrue(exception.getMessage().contains("Only owner can edit"));
+    }
+
+    @Test
+    void findByIdTest() {
+        bookingsByItemId.add(booking1);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item1));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item2));
+
+
+        ItemDtoFullResponse found = itemService.findById(item1.getId(), user1.getId());
+
+        assertNotNull(found);
+        verify(itemRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void findByIdFullNextLastTest() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item1));
+        when(bookingRepository.findAll()).thenReturn(List.of(booking1, booking2, booking3));
+
+        ItemDtoFullResponse found = itemService.findById(item1.getId(), user1.getId());
+
+        assertNotNull(found);
+        verify(itemRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void findByIdFullNextTest() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item1));
+        when(bookingRepository.findAll()).thenReturn(List.of(booking1));
+
+        ItemDtoFullResponse found = itemService.findById(item1.getId(), user1.getId());
+
+
+        assertNotNull(found);
+        verify(itemRepository, times(1)).findById(anyLong());
+    }
+
 
     @Test
     void findAllByUserIdTest() {
