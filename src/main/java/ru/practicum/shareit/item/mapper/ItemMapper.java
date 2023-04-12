@@ -12,7 +12,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.dto.ItemDto;
 import ru.practicum.shareit.item.model.dto.ItemDtoFullResponse;
 import ru.practicum.shareit.item.model.dto.ItemDtoUpdate;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -20,17 +19,10 @@ import java.util.List;
 @org.mapstruct.Mapper(componentModel = "spring")
 public interface ItemMapper extends Mapper<Item, ItemDto> {
 
-    @Override
-    @Mapping(target = "requestId", source = "entity.request.id")
-    ItemDto toDto(Item entity);
-
     @Mapping(target = "id", source = "source.id")
     @Mapping(target = "name", source = "source.name")
-    @Mapping(target = "request", source = "source.requestId")
     Item toEntity(ItemDto source, User owner);
 
-
-    ItemRequest getItemRequest(Long id);
 
     @Mapping(target = "id", source = "source.id")
     @Mapping(target = "lastBooking", source = "last")

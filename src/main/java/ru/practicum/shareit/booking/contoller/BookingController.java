@@ -8,8 +8,6 @@ import ru.practicum.shareit.booking.model.dto.BookingDtoAdd;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 
@@ -45,18 +43,14 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findAllByBookerId(@RequestHeader(X_SHARER_USER_ID) Long bookerId,
-                                              @RequestParam(value = "state", defaultValue = "ALL") String state,
-                                              @PositiveOrZero @RequestParam(value = "from", defaultValue = "9999") Integer from,
-                                              @Positive @RequestParam(value = "size", defaultValue = "9999") Integer size) {
-        return bookingService.findAllById(bookerId, state, from, size);
+                                              @RequestParam(value = "state", defaultValue = "ALL") String state) {
+        return bookingService.findAllById(bookerId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllByOwnerId(@RequestHeader(X_SHARER_USER_ID) Long ownerId,
-                                             @RequestParam(value = "state", defaultValue = "ALL") String state,
-                                             @PositiveOrZero @RequestParam(value = "from", defaultValue = "9999") Integer from,
-                                             @Positive @RequestParam(value = "size", defaultValue = "9999") Integer size) {
-        return bookingService.findAllByOwnerId(ownerId, state, from, size);
+                                             @RequestParam(value = "state", defaultValue = "ALL") String state) {
+        return bookingService.findAllByOwnerId(ownerId, state);
     }
 
 }

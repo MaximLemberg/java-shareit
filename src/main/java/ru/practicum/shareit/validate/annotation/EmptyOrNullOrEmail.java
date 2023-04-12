@@ -1,8 +1,8 @@
-package ru.practicum.shareit.common.validate.annotation;
+package ru.practicum.shareit.validate.annotation;
 
 
 
-import ru.practicum.shareit.common.validate.validator.EmptyOrNullOrEmailValidator;
+import ru.practicum.shareit.validate.validator.EmptyOrNullOrEmailValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
