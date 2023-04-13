@@ -41,17 +41,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> findAllByUserId(Long userId) {
-        check(userRepository, userId);
-        return itemRequestRepository.findAll().stream()
-                .filter(v -> v.getRequester().getId().equals(userId))
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("Object not Found");
+        }
+        return itemRequestRepository.findAllByRequesterId(userId).stream()
                 .map(itemRequestMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ItemRequestDto findById(Long requestId, Long userId) {
-        check(userRepository, userId);
-        check(itemRequestRepository, requestId);
+        if (!userRepository.existsById(userId) || !itemRequestRepository.existsById(requestId)) {
+            throw new EntityNotFoundException("Object not Found");
+        }
         return itemRequestMapper.toDto(itemRequestRepository.getReferenceById(requestId));
     }
 

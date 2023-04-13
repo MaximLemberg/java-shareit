@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 class ItemRequestServiceImplTest {
 
     @Mock
-    private ItemRequestRepository requestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Mock
     private UserRepository userRepository;
 
@@ -78,7 +78,7 @@ class ItemRequestServiceImplTest {
     @BeforeEach
     void setUp() {
         requestService = new ItemRequestServiceImpl(
-                requestRepository,
+                itemRequestRepository,
                 userRepository,
                 itemRequestMapper
         );
@@ -86,7 +86,7 @@ class ItemRequestServiceImplTest {
 
     @Test
     void addItemRequestTest() {
-        when(requestRepository.save(any())).thenAnswer(invocationOnMock -> {
+        when(itemRequestRepository.save(any())).thenAnswer(invocationOnMock -> {
             ItemRequest request = invocationOnMock.getArgument(0, ItemRequest.class);
             request.setCreated(null);
             return request;
@@ -96,13 +96,13 @@ class ItemRequestServiceImplTest {
         ItemRequestDto added = requestService.add(itemRequestDto1, user1.getId());
 
         assertEquals(itemRequestDto1, added);
-        verify(requestRepository, times(1)).save(itemRequest1);
+        verify(itemRequestRepository, times(1)).save(itemRequest1);
     }
 
     @Test
     void findAllByUserIdTest() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
-        when(requestRepository.findAll()).thenReturn(List.of(itemRequest1, itemRequest2));
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRequestRepository.findAllByRequesterId(anyLong())).thenReturn(List.of(itemRequest1, itemRequest2));
 
         List<ItemRequestDto> found = requestService.findAllByUserId(user1.getId());
 
@@ -111,15 +111,33 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
+    void findByUserIdNotValidNotValidTest() {
+        final EntityNotFoundException exception = Assertions.assertThrows(
+                EntityNotFoundException.class,
+                () -> requestService.findAllByUserId(user1.getId()));
+
+        Assertions.assertEquals("Object not Found", exception.getMessage());
+    }
+
+    @Test
     void findByUserIdTest() {
-        when(requestRepository.getReferenceById(anyLong())).thenReturn(itemRequest1);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user1));
-        when(requestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest1));
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRequestRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRequestRepository.getReferenceById(anyLong())).thenReturn(itemRequest1);
 
         ItemRequestDto found = requestService.findById(itemRequest1.getId(), user1.getId());
 
         assertNotNull(found);
         assertEquals(itemRequest1, itemRequestMapper.toEntity(found));
+    }
+
+    @Test
+    void findByUserIdNotValidTest() {
+        final EntityNotFoundException exception = Assertions.assertThrows(
+                EntityNotFoundException.class,
+                () -> requestService.findById(itemRequest1.getId(), user1.getId()));
+
+        Assertions.assertEquals("Object not Found", exception.getMessage());
     }
 
     @Test
@@ -129,7 +147,7 @@ class ItemRequestServiceImplTest {
                 user1,
                 null,
                 null);
-        when(requestRepository.findAllByRequesterIdNot(anyLong(), any())).thenReturn(List.of(itemRequest1, itemRequest2));
+        when(itemRequestRepository.findAllByRequesterIdNot(anyLong(), any())).thenReturn(List.of(itemRequest1, itemRequest2));
 
         List<ItemRequestDto> found = requestService.findAllByIdWithPage(user1.getId(), 1, 1);
 
@@ -140,7 +158,7 @@ class ItemRequestServiceImplTest {
         assertNotNull(found);
         assertEquals(2, found.size());
         Assertions.assertEquals("From negative", exception.getMessage());
-        verify(requestRepository, times(1)).findAllByRequesterIdNot(user1.getId(),
+        verify(itemRequestRepository, times(1)).findAllByRequesterIdNot(user1.getId(),
                 PageRequest.of(1, 1, Sort.by("created").descending()));
     }
 
@@ -148,7 +166,7 @@ class ItemRequestServiceImplTest {
     void checkMethodUserTest() {
         final EntityNotFoundException exception = Assertions.assertThrows(
                 EntityNotFoundException.class,
-                () -> requestService.check(requestRepository, 100L));
+                () -> requestService.check(itemRequestRepository, 100L));
 
         Assertions.assertEquals("Object not Found", exception.getMessage());
     }
