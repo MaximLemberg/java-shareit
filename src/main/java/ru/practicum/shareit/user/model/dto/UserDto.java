@@ -1,13 +1,13 @@
 package ru.practicum.shareit.user.model.dto;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.validate.annotation.EmptyOrNullOrEmail;
-import javax.validation.constraints.*;
+import lombok.Value;
+import ru.practicum.shareit.common.validate.annotation.EmptyOrNullOrEmail;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 
 @Value
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 
     Long id;
